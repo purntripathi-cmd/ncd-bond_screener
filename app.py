@@ -27,9 +27,8 @@ st.markdown("""
 
 CSV_FILE_PATH = "data/sample_bonds.csv"
 
-# Combined Master Catalog: New Sovereign G-Secs/Gilts + All Previous Bonds
-MASTER_BONDS_CATALOG = [
-    # --- New Sovereign G-Secs & Gilts ---
+# Pre-compiled list of long-tenor Sovereign G-Secs, Gilts, and Corporate NCDs
+LATEST_MARKET_BONDS = [
     {
         "isin": "IN0020230036", "issuer_name": "Government of India (7.17% GS 2030)", "sector": "G-Sec / Sovereign",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.17, "coupon_type": "Fixed",
@@ -97,6 +96,17 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 2000.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     },
     {
+        "isin": "INE001A07SD4", "issuer_name": "HDFC Bank Ltd Tier-II Subordinated", "sector": "Banking",
+        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.95, "coupon_type": "Fixed",
+        "current_yield_ytm": 7.82, "last_traded_price": 1008.50, "accrued_interest": 12.30, "issue_date": "2021-09-15",
+        "maturity_date": "2031-09-15", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
+        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-01-10",
+        "secured_unsecured": "Unsecured", "seniority": "Subordinated", "security_cover_ratio": 0.0,
+        "daily_volume_units": 4500, "daily_value_inr_cr": 4.54, "num_trades": 42, "issue_size_inr_cr": 5000.0,
+        "outstanding_inr_cr": 5000.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
+    },
+    {
         "isin": "INE674K08083", "issuer_name": "Aditya Birla Capital 8.07% NCD", "sector": "NBFC / Conglomerate",
         "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 8.07, "coupon_type": "Fixed",
         "current_yield_ytm": 8.10, "last_traded_price": 99.80, "accrued_interest": 1.40, "issue_date": "2024-04-30",
@@ -117,118 +127,6 @@ MASTER_BONDS_CATALOG = [
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.10,
         "daily_volume_units": 2700, "daily_value_inr_cr": 2.7, "num_trades": 35, "issue_size_inr_cr": 300.0,
         "outstanding_inr_cr": 300.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
-    },
-
-    # --- Previous / Legacy Bonds Catalog ---
-    {
-        "isin": "INE001A07SD4", "issuer_name": "HDFC Bank Ltd", "sector": "Banking",
-        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.95, "coupon_type": "Fixed",
-        "current_yield_ytm": 7.82, "last_traded_price": 1008.50, "accrued_interest": 12.30, "issue_date": "2021-09-15",
-        "maturity_date": "2031-09-15", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-01-10",
-        "secured_unsecured": "Unsecured", "seniority": "Senior", "security_cover_ratio": 0.0,
-        "daily_volume_units": 4500, "daily_value_inr_cr": 4.54, "num_trades": 42, "issue_size_inr_cr": 5000.0,
-        "outstanding_inr_cr": 5000.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
-    },
-    {
-        "isin": "INE296A07RO2", "issuer_name": "Bajaj Finance Ltd", "sector": "NBFC",
-        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 8.25, "coupon_type": "Fixed",
-        "current_yield_ytm": 8.10, "last_traded_price": 1005.00, "accrued_interest": 8.50, "issue_date": "2022-03-20",
-        "maturity_date": "2027-03-20", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-02-15",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.25,
-        "daily_volume_units": 12000, "daily_value_inr_cr": 12.06, "num_trades": 115, "issue_size_inr_cr": 2500.0,
-        "outstanding_inr_cr": 2500.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
-    },
-    {
-        "isin": "INE556F08KB5", "issuer_name": "Small Industries Dev Bank (SIDBI)", "sector": "FI / Bank",
-        "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 7.70, "coupon_type": "Fixed",
-        "current_yield_ytm": 7.65, "last_traded_price": 1001.20, "accrued_interest": 5.10, "issue_date": "2023-01-10",
-        "maturity_date": "2026-01-10", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CARE", "rating_outlook": "Stable", "rating_date": "2023-12-05",
-        "secured_unsecured": "Unsecured", "seniority": "Senior", "security_cover_ratio": 0.0,
-        "daily_volume_units": 8500, "daily_value_inr_cr": 8.51, "num_trades": 60, "issue_size_inr_cr": 4000.0,
-        "outstanding_inr_cr": 4000.0, "tax_status": "Taxable", "tds_applicable": "No", "min_investment_units": 5, "lot_size": 5
-    },
-    {
-        "isin": "INE244L07153", "issuer_name": "Piramal Capital & Housing Fin", "sector": "Housing Finance",
-        "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 9.75, "coupon_type": "Fixed",
-        "current_yield_ytm": 10.25, "last_traded_price": 985.00, "accrued_interest": 24.50, "issue_date": "2021-07-14",
-        "maturity_date": "2026-07-14", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "Yes", "premature_withdrawal_allowed": "No", "rating_current": "AA",
-        "rating_agency": "ICRA", "rating_outlook": "Stable", "rating_date": "2024-01-22",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.10,
-        "daily_volume_units": 1800, "daily_value_inr_cr": 1.77, "num_trades": 28, "issue_size_inr_cr": 1000.0,
-        "outstanding_inr_cr": 850.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
-    },
-    {
-        "isin": "INE020B08DF6", "issuer_name": "REC Limited", "sector": "Infra / NBFC",
-        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.54, "coupon_type": "Fixed",
-        "current_yield_ytm": 7.48, "last_traded_price": 1004.00, "accrued_interest": 18.90, "issue_date": "2020-04-15",
-        "maturity_date": "2030-04-15", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "India Ratings", "rating_outlook": "Stable", "rating_date": "2024-03-01",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.15,
-        "daily_volume_units": 9500, "daily_value_inr_cr": 9.54, "num_trades": 84, "issue_size_inr_cr": 3000.0,
-        "outstanding_inr_cr": 3000.0, "tax_status": "54EC", "tds_applicable": "No", "min_investment_units": 1, "lot_size": 1
-    },
-    {
-        "isin": "INE756I07DT0", "issuer_name": "InCred Financial Services", "sector": "NBFC",
-        "exchange": "BSE", "listing_status": "Listed", "coupon_rate": 10.30, "coupon_type": "Fixed",
-        "current_yield_ytm": 10.65, "last_traded_price": 992.50, "accrued_interest": 14.20, "issue_date": "2023-05-12",
-        "maturity_date": "2025-11-12", "payment_frequency": "Monthly", "repayment_mode": "Amortizing",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "A+",
-        "rating_agency": "CRISIL", "rating_outlook": "Positive", "rating_date": "2023-11-18",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.15,
-        "daily_volume_units": 620, "daily_value_inr_cr": 0.62, "num_trades": 14, "issue_size_inr_cr": 200.0,
-        "outstanding_inr_cr": 180.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
-    },
-    {
-        "isin": "INE121A08OE8", "issuer_name": "Cholamandalam Inv & Fin", "sector": "NBFC",
-        "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 8.40, "coupon_type": "Fixed",
-        "current_yield_ytm": 8.28, "last_traded_price": 1006.10, "accrued_interest": 7.80, "issue_date": "2022-10-18",
-        "maturity_date": "2027-10-18", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AA+",
-        "rating_agency": "ICRA", "rating_outlook": "Stable", "rating_date": "2024-01-15",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.20,
-        "daily_volume_units": 5400, "daily_value_inr_cr": 5.43, "num_trades": 39, "issue_size_inr_cr": 1200.0,
-        "outstanding_inr_cr": 1200.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
-    },
-    {
-        "isin": "INE002A08526", "issuer_name": "Reliance Industries Ltd", "sector": "Manufacturing",
-        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.62, "coupon_type": "Fixed",
-        "current_yield_ytm": 7.50, "last_traded_price": 1010.00, "accrued_interest": 11.10, "issue_date": "2020-03-23",
-        "maturity_date": "2025-03-23", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2023-10-11",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.50,
-        "daily_volume_units": 15000, "daily_value_inr_cr": 15.15, "num_trades": 140, "issue_size_inr_cr": 7500.0,
-        "outstanding_inr_cr": 7500.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
-    },
-    {
-        "isin": "INE040A08377", "issuer_name": "HDFC Credila Financial Services", "sector": "Education NBFC",
-        "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 8.90, "coupon_type": "Fixed",
-        "current_yield_ytm": 9.15, "last_traded_price": 990.00, "accrued_interest": 6.40, "issue_date": "2023-08-01",
-        "maturity_date": "2028-08-01", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AA+",
-        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-02-28",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.10,
-        "daily_volume_units": 800, "daily_value_inr_cr": 0.79, "num_trades": 16, "issue_size_inr_cr": 500.0,
-        "outstanding_inr_cr": 500.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
-    },
-    {
-        "isin": "INE528S07078", "issuer_name": "Edelweiss Financial Services", "sector": "NBFC",
-        "exchange": "BSE", "listing_status": "Listed", "coupon_rate": 10.40, "coupon_type": "Floating",
-        "current_yield_ytm": 11.20, "last_traded_price": 970.00, "accrued_interest": 32.00, "issue_date": "2022-01-07",
-        "maturity_date": "2026-01-07", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "Yes", "premature_withdrawal_allowed": "No", "rating_current": "A+",
-        "rating_agency": "CRISIL", "rating_outlook": "Negative", "rating_date": "2023-09-12",
-        "secured_unsecured": "Secured", "seniority": "Subordinated", "security_cover_ratio": 1.10,
-        "daily_volume_units": 400, "daily_value_inr_cr": 0.39, "num_trades": 11, "issue_size_inr_cr": 400.0,
-        "outstanding_inr_cr": 320.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     }
 ]
 
@@ -237,7 +135,7 @@ MASTER_BONDS_CATALOG = [
 def get_bond_data():
     if not os.path.exists(CSV_FILE_PATH):
         os.makedirs("data", exist_ok=True)
-        pd.DataFrame(MASTER_BONDS_CATALOG).to_csv(CSV_FILE_PATH, index=False)
+        pd.DataFrame(LATEST_MARKET_BONDS).to_csv(CSV_FILE_PATH, index=False)
     return load_sample_csv(CSV_FILE_PATH)
 
 # Top Bar Header & Refresh
@@ -287,14 +185,69 @@ with tab_screener:
     tax_slab = st.sidebar.number_input("Your Tax Slab (%)", min_value=0.0, max_value=45.0, value=30.0, step=1.0)
     target_yield = st.sidebar.number_input("Target Post-Tax Yield (%)", min_value=0.0, max_value=25.0, value=6.0, step=0.25)
 
+    # Ensure required columns exist even if reading an older CSV file
     if "payment_frequency" not in raw_data.columns:
         raw_data["payment_frequency"] = "Annual"
+
     if "tax_status" not in raw_data.columns:
         raw_data["tax_status"] = "Taxable"
 
     data = compute_derived_metrics(raw_data, user_tax_rate=tax_slab)
 
-    # Multi-Factor Weighted Buy Score
+    # 3. Multi-Factor Weighted Buy Score
+    def calculate_buy_score(row) -> float:
+        score = 0.0
+        post_tax = row.get("post_tax_yield", 0.0)
+        score += min(30.0, max(0.0, (post_tax / 10.0) * 30.0))
+
+        rating = str(row.get("rating_current", "")).upper()
+        if "SOVEREIGN" in rating:
+            score += 25.0
+        elif "AAA" in rating:
+            score += 23.0
+        elif "AA+" in rating:
+            score += 19.0
+        elif "AA" in rating:
+            score += 16.0
+        elif "A+" in rating:
+            score += 10.0
+        elif "A" in rating:
+            score += 7.0
+        else:
+            score += 2.0
+            
+        sec = str(row.get("secured_unsecured", "")).capitalize()
+        if "Secured" in sec or "Sovereign" in sec:
+            score += 15.0
+        else:
+            score += 5.0
+            
+        if row.get("is_govt_psu") == "Yes":
+            score += 15.0
+        else:
+            score += 5.0
+            
+        liq = row.get("liquidity_flag", "Low")
+        if liq == "High":
+            score += 10.0
+        elif liq == "Medium":
+            score += 6.0
+        else:
+            score += 2.0
+            
+        tenor = row.get("remaining_tenor_years", 1.0)
+        if 1.0 <= tenor <= 3.0:
+            score += 5.0
+        elif 3.0 < tenor <= 6.0:
+            score += 4.0
+        elif 6.0 < tenor <= 10.0:
+            score += 3.0
+        else:
+            score += 1.5
+
+        return round(score, 1)
+
+    # 3. Multi-Factor Weighted Buy Score
     def calculate_buy_score(row) -> float:
         score = 0.0
         post_tax = row.get("post_tax_yield", 0.0)
@@ -365,12 +318,13 @@ with tab_screener:
     max_ytm = float(data['current_yield_ytm'].max())
     ytm_range = st.sidebar.slider("Current YTM (%)", min_ytm, max_ytm, (min_ytm, max_ytm), step=0.1)
 
-    # Filter out bonds with tenor < 1.0 year as requested
+    # Enforce minimum tenor of 1.0 year as requested
     valid_tenors = data[data['remaining_tenor_years'] >= 1.0]['remaining_tenor_years']
     floor_tenor = 1.0
     ceil_tenor = float(valid_tenors.max()) if not valid_tenors.empty else 10.0
     tenor_range = st.sidebar.slider("Remaining Tenor (Years)", floor_tenor, ceil_tenor, (floor_tenor, ceil_tenor), step=0.5)
 
+    # Filter Pipeline
     filtered = data[data['remaining_tenor_years'] >= 1.0].copy()
 
     if search_query:
@@ -443,7 +397,7 @@ with tab_screener:
         else:
             st.info("No data available.")
 
-    # Filtered Bond Master Table
+    # 4. Filtered Bond Master Table
     st.subheader("📋 Filtered Bond Master")
 
     display_columns = [
@@ -453,6 +407,7 @@ with tab_screener:
         "last_traded_price", "liquidity_flag", "tax_status"
     ]
 
+    # Format maturity date as YYYY-MM-DD
     sorted_filtered = filtered.sort_values(by="post_tax_yield", ascending=False).copy()
     sorted_filtered['maturity_date'] = sorted_filtered['maturity_date'].dt.strftime('%Y-%m-%d')
 
@@ -489,11 +444,11 @@ with tab_screener:
 with tab_discover:
     st.subheader("🔎 Discover & Sync Master Bond Data")
     st.write(
-        "Select bonds below to add them to your dataset. Clicking **Append / Merge to sample_bonds.csv** "
-        "will merge selected bonds with your existing records using **ISIN** as unique identifier without duplicates or overwriting existing data."
+        "Below is a curated set of active **Sovereign G-Secs, PSU Gilts, and High-Yield Corporate Bonds** with maturities ranging from **2029 to 2064** (>3 years remaining). "
+        "Select the bonds you want to keep in your master dataset and click **Update sample_bonds.csv**."
     )
 
-    catalog_df = pd.DataFrame(MASTER_BONDS_CATALOG)
+    catalog_df = pd.DataFrame(LATEST_MARKET_BONDS)
     catalog_df["Select"] = True
 
     edited_df = st.data_editor(
@@ -506,24 +461,15 @@ with tab_discover:
         hide_index=True
     )
 
-    col_btn, _ = st.columns([3, 4])
+    col_btn, _ = st.columns([2, 5])
     with col_btn:
-        if st.button("➕ Append / Merge to sample_bonds.csv", use_container_width=True, type="primary"):
+        if st.button("💾 Overwrite & Update sample_bonds.csv", use_container_width=True, type="primary"):
             selected_isins = edited_df[edited_df["Select"] == True]["isin"].tolist()
-            new_selection_df = catalog_df[catalog_df["isin"].isin(selected_isins)].drop(columns=["Select"])
+            final_df = catalog_df[catalog_df["isin"].isin(selected_isins)].drop(columns=["Select"])
             
             os.makedirs(os.path.dirname(CSV_FILE_PATH), exist_ok=True)
-            
-            # Read existing records if file exists to perform append / de-duplicated merge
-            if os.path.exists(CSV_FILE_PATH):
-                existing_df = pd.read_csv(CSV_FILE_PATH)
-                # Combine existing + new selections and drop duplicate ISINs (keeps latest updated fields)
-                combined_df = pd.concat([existing_df, new_selection_df], ignore_index=True).drop_duplicates(subset=["isin"], keep="last")
-            else:
-                combined_df = new_selection_df
-            
-            combined_df.to_csv(CSV_FILE_PATH, index=False)
+            final_df.to_csv(CSV_FILE_PATH, index=False)
             
             st.cache_data.clear()
-            st.success(f"Merged successfully! Master dataset now contains {len(combined_df)} unique bonds in `{CSV_FILE_PATH}`.")
+            st.success(f"Successfully saved {len(final_df)} bonds to `{CSV_FILE_PATH}`!")
             st.rerun()
