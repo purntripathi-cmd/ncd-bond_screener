@@ -29,7 +29,6 @@ CSV_FILE_PATH = "data/sample_bonds.csv"
 
 # Combined Master Catalog: New Sovereign G-Secs/Gilts + All Previous Bonds
 MASTER_BONDS_CATALOG = [
-    # --- New Sovereign G-Secs & Gilts ---
     {
         "isin": "IN0020230036", "issuer_name": "Government of India (7.17% GS 2030)", "sector": "G-Sec / Sovereign",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.17, "coupon_type": "Fixed",
@@ -64,17 +63,6 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 5000.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     },
     {
-        "isin": "INE020B08FY2", "issuer_name": "REC Limited 6.70% Bonds", "sector": "PSU / Infra NBFC",
-        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 6.70, "coupon_type": "Fixed",
-        "current_yield_ytm": 7.48, "last_traded_price": 97.65, "accrued_interest": 3.80, "issue_date": "2021-12-31",
-        "maturity_date": "2029-12-31", "payment_frequency": "Annual", "repayment_mode": "Bullet",
-        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CARE", "rating_outlook": "Stable", "rating_date": "2024-03-01",
-        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.15,
-        "daily_volume_units": 7500, "daily_value_inr_cr": 7.35, "num_trades": 55, "issue_size_inr_cr": 3000.0,
-        "outstanding_inr_cr": 3000.0, "tax_status": "54EC", "tds_applicable": "No", "min_investment_units": 1, "lot_size": 1
-    },
-    {
         "isin": "INE053F08312", "issuer_name": "Indian Railway Finance Corp (IRFC)", "sector": "PSU / Railways",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.64, "coupon_type": "Fixed",
         "current_yield_ytm": 7.32, "last_traded_price": 101.80, "accrued_interest": 4.10, "issue_date": "2021-03-22",
@@ -84,6 +72,17 @@ MASTER_BONDS_CATALOG = [
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.25,
         "daily_volume_units": 12000, "daily_value_inr_cr": 12.2, "num_trades": 110, "issue_size_inr_cr": 4500.0,
         "outstanding_inr_cr": 4500.0, "tax_status": "Tax-free", "tds_applicable": "No", "min_investment_units": 1, "lot_size": 1
+    },
+    {
+        "isin": "INE020B08FY2", "issuer_name": "REC Limited 6.70% 54EC Bonds", "sector": "PSU / Infra NBFC",
+        "exchange": "Both", "listing_status": "Listed", "coupon_rate": 6.70, "coupon_type": "Fixed",
+        "current_yield_ytm": 7.48, "last_traded_price": 97.65, "accrued_interest": 3.80, "issue_date": "2021-12-31",
+        "maturity_date": "2029-12-31", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
+        "rating_agency": "CARE", "rating_outlook": "Stable", "rating_date": "2024-03-01",
+        "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.15,
+        "daily_volume_units": 7500, "daily_value_inr_cr": 7.35, "num_trades": 55, "issue_size_inr_cr": 3000.0,
+        "outstanding_inr_cr": 3000.0, "tax_status": "54EC", "tds_applicable": "No", "min_investment_units": 1, "lot_size": 1
     },
     {
         "isin": "INE296A07UB9", "issuer_name": "Bajaj Finance Limited 7.70% NCD", "sector": "NBFC",
@@ -118,10 +117,8 @@ MASTER_BONDS_CATALOG = [
         "daily_volume_units": 2700, "daily_value_inr_cr": 2.7, "num_trades": 35, "issue_size_inr_cr": 300.0,
         "outstanding_inr_cr": 300.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
     },
-
-    # --- Previous / Legacy Bonds Catalog ---
     {
-        "isin": "INE001A07SD4", "issuer_name": "HDFC Bank Ltd", "sector": "Banking",
+        "isin": "INE001A07SD4", "issuer_name": "HDFC Bank Ltd Tier-II", "sector": "Banking",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.95, "coupon_type": "Fixed",
         "current_yield_ytm": 7.82, "last_traded_price": 1008.50, "accrued_interest": 12.30, "issue_date": "2021-09-15",
         "maturity_date": "2031-09-15", "payment_frequency": "Annual", "repayment_mode": "Bullet",
@@ -132,10 +129,10 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 5000.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
     },
     {
-        "isin": "INE296A07RO2", "issuer_name": "Bajaj Finance Ltd", "sector": "NBFC",
+        "isin": "INE296A07RW1", "issuer_name": "Bajaj Finance Ltd Long Term", "sector": "NBFC",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 8.25, "coupon_type": "Fixed",
         "current_yield_ytm": 8.10, "last_traded_price": 1005.00, "accrued_interest": 8.50, "issue_date": "2022-03-20",
-        "maturity_date": "2027-03-20", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "maturity_date": "2031-12-02", "payment_frequency": "Annual", "repayment_mode": "Bullet",
         "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
         "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-02-15",
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.25,
@@ -143,21 +140,21 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 2500.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     },
     {
-        "isin": "INE556F08KB5", "issuer_name": "Small Industries Dev Bank (SIDBI)", "sector": "FI / Bank",
+        "isin": "INE556F08KD1", "issuer_name": "Small Industries Dev Bank (SIDBI)", "sector": "FI / Bank",
         "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 7.70, "coupon_type": "Fixed",
         "current_yield_ytm": 7.65, "last_traded_price": 1001.20, "accrued_interest": 5.10, "issue_date": "2023-01-10",
-        "maturity_date": "2026-01-10", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "maturity_date": "2029-01-10", "payment_frequency": "Annual", "repayment_mode": "Bullet",
         "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CARE", "rating_outlook": "Stable", "rating_date": "2023-12-05",
+        "rating_agency": "CARE", "rating_outlook": "Stable", "rating_date": "2024-01-05",
         "secured_unsecured": "Unsecured", "seniority": "Senior", "security_cover_ratio": 0.0,
         "daily_volume_units": 8500, "daily_value_inr_cr": 8.51, "num_trades": 60, "issue_size_inr_cr": 4000.0,
         "outstanding_inr_cr": 4000.0, "tax_status": "Taxable", "tds_applicable": "No", "min_investment_units": 5, "lot_size": 5
     },
     {
-        "isin": "INE244L07153", "issuer_name": "Piramal Capital & Housing Fin", "sector": "Housing Finance",
+        "isin": "INE244L07187", "issuer_name": "Piramal Capital & Housing Fin", "sector": "Housing Finance",
         "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 9.75, "coupon_type": "Fixed",
-        "current_yield_ytm": 10.25, "last_traded_price": 985.00, "accrued_interest": 24.50, "issue_date": "2021-07-14",
-        "maturity_date": "2026-07-14", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "current_yield_ytm": 10.25, "last_traded_price": 985.00, "accrued_interest": 24.50, "issue_date": "2022-07-14",
+        "maturity_date": "2028-07-14", "payment_frequency": "Annual", "repayment_mode": "Bullet",
         "call_put_option": "Yes", "premature_withdrawal_allowed": "No", "rating_current": "AA",
         "rating_agency": "ICRA", "rating_outlook": "Stable", "rating_date": "2024-01-22",
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.10,
@@ -165,7 +162,7 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 850.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     },
     {
-        "isin": "INE020B08DF6", "issuer_name": "REC Limited", "sector": "Infra / NBFC",
+        "isin": "INE020B08DF6", "issuer_name": "REC Limited Infrastructure", "sector": "Infra / NBFC",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.54, "coupon_type": "Fixed",
         "current_yield_ytm": 7.48, "last_traded_price": 1004.00, "accrued_interest": 18.90, "issue_date": "2020-04-15",
         "maturity_date": "2030-04-15", "payment_frequency": "Annual", "repayment_mode": "Bullet",
@@ -176,12 +173,12 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 3000.0, "tax_status": "54EC", "tds_applicable": "No", "min_investment_units": 1, "lot_size": 1
     },
     {
-        "isin": "INE756I07DT0", "issuer_name": "InCred Financial Services", "sector": "NBFC",
+        "isin": "INE756I07EA9", "issuer_name": "InCred Financial Services", "sector": "NBFC",
         "exchange": "BSE", "listing_status": "Listed", "coupon_rate": 10.30, "coupon_type": "Fixed",
         "current_yield_ytm": 10.65, "last_traded_price": 992.50, "accrued_interest": 14.20, "issue_date": "2023-05-12",
-        "maturity_date": "2025-11-12", "payment_frequency": "Monthly", "repayment_mode": "Amortizing",
+        "maturity_date": "2028-11-12", "payment_frequency": "Monthly", "repayment_mode": "Amortizing",
         "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "A+",
-        "rating_agency": "CRISIL", "rating_outlook": "Positive", "rating_date": "2023-11-18",
+        "rating_agency": "CRISIL", "rating_outlook": "Positive", "rating_date": "2024-03-18",
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.15,
         "daily_volume_units": 620, "daily_value_inr_cr": 0.62, "num_trades": 14, "issue_size_inr_cr": 200.0,
         "outstanding_inr_cr": 180.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
@@ -190,7 +187,7 @@ MASTER_BONDS_CATALOG = [
         "isin": "INE121A08OE8", "issuer_name": "Cholamandalam Inv & Fin", "sector": "NBFC",
         "exchange": "NSE", "listing_status": "Listed", "coupon_rate": 8.40, "coupon_type": "Fixed",
         "current_yield_ytm": 8.28, "last_traded_price": 1006.10, "accrued_interest": 7.80, "issue_date": "2022-10-18",
-        "maturity_date": "2027-10-18", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "maturity_date": "2028-10-18", "payment_frequency": "Annual", "repayment_mode": "Bullet",
         "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AA+",
         "rating_agency": "ICRA", "rating_outlook": "Stable", "rating_date": "2024-01-15",
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.20,
@@ -198,12 +195,12 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 1200.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     },
     {
-        "isin": "INE002A08526", "issuer_name": "Reliance Industries Ltd", "sector": "Manufacturing",
+        "isin": "INE002A08609", "issuer_name": "Reliance Industries Ltd NCD", "sector": "Manufacturing",
         "exchange": "Both", "listing_status": "Listed", "coupon_rate": 7.62, "coupon_type": "Fixed",
-        "current_yield_ytm": 7.50, "last_traded_price": 1010.00, "accrued_interest": 11.10, "issue_date": "2020-03-23",
-        "maturity_date": "2025-03-23", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "current_yield_ytm": 7.50, "last_traded_price": 1010.00, "accrued_interest": 11.10, "issue_date": "2023-03-23",
+        "maturity_date": "2033-03-23", "payment_frequency": "Annual", "repayment_mode": "Bullet",
         "call_put_option": "No", "premature_withdrawal_allowed": "No", "rating_current": "AAA",
-        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2023-10-11",
+        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-01-11",
         "secured_unsecured": "Secured", "seniority": "Senior", "security_cover_ratio": 1.50,
         "daily_volume_units": 15000, "daily_value_inr_cr": 15.15, "num_trades": 140, "issue_size_inr_cr": 7500.0,
         "outstanding_inr_cr": 7500.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 10, "lot_size": 10
@@ -220,12 +217,12 @@ MASTER_BONDS_CATALOG = [
         "outstanding_inr_cr": 500.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
     },
     {
-        "isin": "INE528S07078", "issuer_name": "Edelweiss Financial Services", "sector": "NBFC",
+        "isin": "INE528S07128", "issuer_name": "Edelweiss Financial Services", "sector": "NBFC",
         "exchange": "BSE", "listing_status": "Listed", "coupon_rate": 10.40, "coupon_type": "Floating",
-        "current_yield_ytm": 11.20, "last_traded_price": 970.00, "accrued_interest": 32.00, "issue_date": "2022-01-07",
-        "maturity_date": "2026-01-07", "payment_frequency": "Annual", "repayment_mode": "Bullet",
+        "current_yield_ytm": 11.20, "last_traded_price": 970.00, "accrued_interest": 32.00, "issue_date": "2023-01-07",
+        "maturity_date": "2029-01-07", "payment_frequency": "Annual", "repayment_mode": "Bullet",
         "call_put_option": "Yes", "premature_withdrawal_allowed": "No", "rating_current": "A+",
-        "rating_agency": "CRISIL", "rating_outlook": "Negative", "rating_date": "2023-09-12",
+        "rating_agency": "CRISIL", "rating_outlook": "Stable", "rating_date": "2024-01-12",
         "secured_unsecured": "Secured", "seniority": "Subordinated", "security_cover_ratio": 1.10,
         "daily_volume_units": 400, "daily_value_inr_cr": 0.39, "num_trades": 11, "issue_size_inr_cr": 400.0,
         "outstanding_inr_cr": 320.0, "tax_status": "Taxable", "tds_applicable": "Yes", "min_investment_units": 1, "lot_size": 1
