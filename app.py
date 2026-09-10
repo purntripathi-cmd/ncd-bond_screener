@@ -185,7 +185,14 @@ with tab_screener:
     tax_slab = st.sidebar.number_input("Your Tax Slab (%)", min_value=0.0, max_value=45.0, value=30.0, step=1.0)
     target_yield = st.sidebar.number_input("Target Post-Tax Yield (%)", min_value=0.0, max_value=25.0, value=6.0, step=0.25)
 
-    data = compute_derived_metrics(raw_data, user_tax_rate=tax_slab)
+    # Ensure required columns exist even if reading an older CSV file
+if "payment_frequency" not in raw_data.columns:
+    raw_data["payment_frequency"] = "Annual"
+
+if "tax_status" not in raw_data.columns:
+    raw_data["tax_status"] = "Taxable"
+
+data = compute_derived_metrics(raw_data, user_tax_rate=tax_slab)
 
     # 3. Multi-Factor Weighted Buy Score
     def calculate_buy_score(row) -> float:
