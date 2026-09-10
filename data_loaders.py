@@ -15,7 +15,11 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd
     data['remaining_tenor_years'] = ((data['maturity_date'] - today).dt.days / 365.25).round(2)
     data['remaining_tenor_years'] = data['remaining_tenor_years'].apply(lambda x: max(0.0, x))
 
-    # 2. Derived Liquidity Flag (based on turnover & trades)
+    # Ensure payment frequency exists
+    if 'payment_frequency' not in data.columns:
+        data['payment_frequency'] = 'Annual'
+
+    # 2. Derived Liquidity Flag
     def calc_liquidity(row):
         val = row.get('daily_value_inr_cr', 0.0)
         trades = row.get('num_trades', 0)
@@ -31,7 +35,7 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd
     tax_factor = 1.0 - (user_tax_rate / 100.0)
     data['post_tax_yield'] = data.apply(
         lambda r: round(r['current_yield_ytm'], 2) 
-        if r.get('tax_status') in ['Tax-free', '54EC'] 
+        if str(r.get('tax_status', '')).strip().lower() in ['tax-free', '54ec'] 
         else round(r['current_yield_ytm'] * tax_factor, 2),
         axis=1
     )
@@ -40,6 +44,9 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd
     def assign_risk_bucket(row):
         r = str(row.get('rating_current', '')).upper()
         sec = str(row.get('secured_unsecured', '')).capitalize()
+        sector = str(row.get('sector', '')).lower()
+        if "sovereign" in r or "g-sec" in sector or "gilt" in sector:
+            return "Sovereign / G-Sec (Zero Default Risk)"
         is_safe = any(k in r for k in ['AAA', 'AA+', 'AA'])
         if is_safe and sec == "Secured":
             return "Prime Secured (Lower Risk)"
@@ -54,15 +61,6 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd
 
 def load_sample_csv(path: str = "data/sample_bonds.csv") -> pd.DataFrame:
     try:
-        df = pd.read_csv(path)
-        return df
+        return pd.read_csv(path)
     except Exception as e:
-        raise RuntimeError(f"Error loading master CSV: {e}")
-
-def load_nse_bonds_stub() -> pd.DataFrame:
-    """
-    Hook for automated ingestion:
-    e.g., scrape from NSE / Trade Repository or an S3 bucket sync.
-    """
-    # Placeholder: currently calls sample
-    return load_sample_csv()
+        raise RuntimeError(f"Error loading master CSV at {path}: {e}")
