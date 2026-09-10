@@ -80,7 +80,7 @@ tab_screener, tab_discover = st.tabs(["📊 Bond Screener & Analytics", "🔎 Di
 with tab_screener:
     # Sidebar Filters
     st.sidebar.title("🔍 Screener Filters")
-    tax_slab = st.sidebar.number_input("Your Tax Slab (%)", min_value=0.0, max_value=45.0, value=30.0, step=1.0)
+    tax_slab = st.sidebar.number_input("Your Tax Slab (%)", min_value=0.0, max_value=45.0, value=12.5, step=1.0)
     target_yield = st.sidebar.number_input("Target Post-Tax Yield (%)", min_value=0.0, max_value=25.0, value=6.0, step=0.25)
 
     if "payment_frequency" not in raw_data.columns:
