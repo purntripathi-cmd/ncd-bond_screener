@@ -186,13 +186,66 @@ with tab_screener:
     target_yield = st.sidebar.number_input("Target Post-Tax Yield (%)", min_value=0.0, max_value=25.0, value=6.0, step=0.25)
 
     # Ensure required columns exist even if reading an older CSV file
-if "payment_frequency" not in raw_data.columns:
-    raw_data["payment_frequency"] = "Annual"
+    if "payment_frequency" not in raw_data.columns:
+        raw_data["payment_frequency"] = "Annual"
 
-if "tax_status" not in raw_data.columns:
-    raw_data["tax_status"] = "Taxable"
+    if "tax_status" not in raw_data.columns:
+        raw_data["tax_status"] = "Taxable"
 
-data = compute_derived_metrics(raw_data, user_tax_rate=tax_slab)
+    data = compute_derived_metrics(raw_data, user_tax_rate=tax_slab)
+
+    # 3. Multi-Factor Weighted Buy Score
+    def calculate_buy_score(row) -> float:
+        score = 0.0
+        post_tax = row.get("post_tax_yield", 0.0)
+        score += min(30.0, max(0.0, (post_tax / 10.0) * 30.0))
+
+        rating = str(row.get("rating_current", "")).upper()
+        if "SOVEREIGN" in rating:
+            score += 25.0
+        elif "AAA" in rating:
+            score += 23.0
+        elif "AA+" in rating:
+            score += 19.0
+        elif "AA" in rating:
+            score += 16.0
+        elif "A+" in rating:
+            score += 10.0
+        elif "A" in rating:
+            score += 7.0
+        else:
+            score += 2.0
+            
+        sec = str(row.get("secured_unsecured", "")).capitalize()
+        if "Secured" in sec or "Sovereign" in sec:
+            score += 15.0
+        else:
+            score += 5.0
+            
+        if row.get("is_govt_psu") == "Yes":
+            score += 15.0
+        else:
+            score += 5.0
+            
+        liq = row.get("liquidity_flag", "Low")
+        if liq == "High":
+            score += 10.0
+        elif liq == "Medium":
+            score += 6.0
+        else:
+            score += 2.0
+            
+        tenor = row.get("remaining_tenor_years", 1.0)
+        if 1.0 <= tenor <= 3.0:
+            score += 5.0
+        elif 3.0 < tenor <= 6.0:
+            score += 4.0
+        elif 6.0 < tenor <= 10.0:
+            score += 3.0
+        else:
+            score += 1.5
+
+        return round(score, 1)
 
     # 3. Multi-Factor Weighted Buy Score
     def calculate_buy_score(row) -> float:
