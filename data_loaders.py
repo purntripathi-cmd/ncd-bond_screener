@@ -48,19 +48,23 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 0.0) -> pd.
     """Calculates tenor, liquidity flag, risk bucketing, durations, convexity, and post-tax yields (default: 0% tax / gross yield)."""
     data = df.copy()
     
-    # Parse dates
-    data['issue_date'] = pd.to_datetime(data['issue_date'])
-    data['maturity_date'] = pd.to_datetime(data['maturity_date'])
+    # Parse dates for tenor calculations
+    issue_dt = pd.to_datetime(data['issue_date'])
+    maturity_dt = pd.to_datetime(data['maturity_date'])
     today = pd.to_datetime(datetime.today().date())
 
     # 1. Remaining Tenor (Years & Months)
-    days_left = (data['maturity_date'] - today).dt.days
+    days_left = (maturity_dt - today).dt.days
     data['remaining_tenor_months'] = (days_left / 30.4375).round(1)
     data['remaining_tenor_years'] = (days_left / 365.25).round(2)
     data['remaining_tenor_display'] = data.apply(
         lambda r: f"{r['remaining_tenor_years']:.1f} Yrs ({int(max(0, r['remaining_tenor_months']))}M)" if r['remaining_tenor_months'] >= 0 else "Matured",
         axis=1
     )
+
+    # Format human-readable string dates (DD-Mon-YYYY) to prevent epoch millisecond display
+    data['issue_date'] = issue_dt.dt.strftime('%d-%b-%Y')
+    data['maturity_date'] = maturity_dt.dt.strftime('%d-%b-%Y')
 
     if 'payment_frequency' not in data.columns:
         data['payment_frequency'] = 'Annual'

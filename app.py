@@ -218,8 +218,9 @@ with tab_screener:
 
     display_cols = [
         "ticker", "issuer_name", "isin", "issue_date", "maturity_date", "remaining_tenor_display",
-        "payment_frequency", "secured_unsecured", "volume_indicator", "avg_daily_volume_cr",
-        "rating_current", "coupon_rate", "current_yield_ytm", "credit_spread_bps", "post_tax_yield",
+        "payment_frequency", "rating_current", "secured_unsecured", "coupon_rate", 
+        "current_yield_ytm", "credit_spread_bps", "post_tax_yield", 
+        "volume_indicator", "avg_daily_volume_cr",
         "modified_duration", "convexity", "tax_status", "is_govt_psu", "liquidity_flag", "buy_score"
     ]
     display_cols = [c for c in display_cols if c in filtered.columns]
@@ -231,19 +232,19 @@ with tab_screener:
         column_config={
             "ticker": st.column_config.TextColumn("Ticker", help="NSE/BSE Trading Symbol for quick terminal search", width="small"),
             "issuer_name": st.column_config.TextColumn("Bond Title / Issue Name", width="large"),
-            "isin": st.column_config.TextColumn("ISIN", width="small"),
-            "issue_date": st.column_config.TextColumn("Issue Date", width="small"),
-            "maturity_date": st.column_config.TextColumn("Maturity Date", width="small"),
-            "remaining_tenor_display": st.column_config.TextColumn("Remaining Tenor", help="Years and months remaining until maturity", width="small"),
-            "payment_frequency": st.column_config.TextColumn("Payout Freq", help="Interest Payout Schedule (Annual, Semi-Annual, Monthly)", width="small"),
-            "secured_unsecured": st.column_config.TextColumn("Security Type", help="Charge on assets (Secured, Unsecured, Sovereign Guarantee)", width="small"),
-            "volume_indicator": st.column_config.TextColumn("Avg Daily Volume Indication", help="Liquidity category and exchange turnover", width="medium"),
-            "avg_daily_volume_cr": st.column_config.NumberColumn("ADV (₹ Cr)", format="₹ %.2f Cr", help="Average Daily Turnover in INR Crore", width="small"),
+            "isin": st.column_config.TextColumn("ISIN", help="12-digit International Securities Identification Number", width="medium"),
+            "issue_date": st.column_config.TextColumn("Issue Date", help="Allotment / Issue Date (DD-Mon-YYYY)", width="medium"),
+            "maturity_date": st.column_config.TextColumn("Maturity Date", help="Redemption / Maturity Date (DD-Mon-YYYY)", width="medium"),
+            "remaining_tenor_display": st.column_config.TextColumn("Tenor Remaining", help="Years and months remaining until maturity", width="medium"),
+            "payment_frequency": st.column_config.TextColumn("Payout Frequency", help="Interest Payout Schedule (Annual, Semi-Annual, Monthly)", width="medium"),
             "rating_current": st.column_config.TextColumn("Rating", width="small"),
+            "secured_unsecured": st.column_config.TextColumn("Security Type", help="Charge on assets (Secured, Unsecured, Sovereign Guarantee)", width="medium"),
             "coupon_rate": st.column_config.NumberColumn("Coupon (%)", format="%.2f%%"),
             "current_yield_ytm": st.column_config.NumberColumn("Gross YTM (%)", format="%.2f%%", help="Pre-tax / gross yield to maturity"),
             "credit_spread_bps": st.column_config.NumberColumn("Spread (bps)", help="Yield spread over 10Y Sovereign G-Sec (6.82%)"),
-            "post_tax_yield": st.column_config.NumberColumn("Post-Tax Yield", format="%.2f%%", help="Yield realized after deducting user tax slab (0% default = Gross Yield)"),
+            "post_tax_yield": st.column_config.NumberColumn("Post-Tax Yield (%)", format="%.2f%%", help="Yield realized after deducting user tax slab (0% default = Gross Yield)"),
+            "volume_indicator": st.column_config.TextColumn("Avg Daily Volume Indication", help="Liquidity category and exchange turnover", width="medium"),
+            "avg_daily_volume_cr": st.column_config.NumberColumn("ADV (₹ Cr)", format="₹ %.2f Cr", help="Average Daily Turnover in INR Crore", width="small"),
             "remaining_tenor_years": st.column_config.NumberColumn("Tenor (Yrs)", format="%.1f"),
             "modified_duration": st.column_config.NumberColumn("Mod Dur (Yrs)", format="%.2f"),
             "convexity": st.column_config.NumberColumn("Convexity", format="%.2f"),
@@ -341,4 +342,9 @@ with tab_stress_test:
 
 with tab_manage:
     st.subheader("📂 Active Bond Master Database")
-    st.dataframe(raw_data, use_container_width=True)
+    master_df = raw_data.copy()
+    if 'issue_date' in master_df.columns:
+        master_df['issue_date'] = pd.to_datetime(master_df['issue_date']).dt.strftime('%d-%b-%Y')
+    if 'maturity_date' in master_df.columns:
+        master_df['maturity_date'] = pd.to_datetime(master_df['maturity_date']).dt.strftime('%d-%b-%Y')
+    st.dataframe(master_df, use_container_width=True)
