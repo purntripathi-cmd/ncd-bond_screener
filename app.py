@@ -100,8 +100,8 @@ tab_screener, tab_yield_curve, tab_stress_test, tab_manage = st.tabs([
 
 # Sidebar Filters
 st.sidebar.title("🔍 Screener Filters")
-tax_slab = st.sidebar.number_input("Your Tax Slab (%)", min_value=0.0, max_value=45.0, value=30.0, step=1.0)
-target_yield = st.sidebar.number_input("Target Post-Tax Yield (%)", min_value=0.0, max_value=25.0, value=6.0, step=0.25)
+tax_slab = st.sidebar.number_input("Your Tax Slab (%)", min_value=0.0, max_value=45.0, value=0.0, step=1.0, help="Default: 0% (Gross / Pre-Tax Yield). Set to marginal tax slab for net post-tax return.")
+target_yield = st.sidebar.number_input("Target Yield (Pre-Tax YTM %)", min_value=0.0, max_value=25.0, value=7.0, step=0.25)
 
 data = compute_derived_metrics(raw_data, user_tax_rate=tax_slab)
 
@@ -169,6 +169,10 @@ ytm_range = st.sidebar.slider("Current YTM (%)", min_ytm, max_ytm, (min_ytm, max
 max_tenor = float(data['remaining_tenor_years'].max())
 tenor_range = st.sidebar.slider("Tenor (Years)", 0.0, max_tenor, (0.0, max_tenor), step=0.5)
 
+st.sidebar.markdown("---")
+ignore_sub_12m = st.sidebar.checkbox("Ignore bonds maturing in < 12 months", value=True, help="Institutional mandate: Excludes short-dated securities with tenor < 1 year")
+min_adv = st.sidebar.slider("Min Avg Daily Volume (₹ Cr)", 0.0, 50.0, 0.0, 1.0, help="Filter by minimum exchange average daily turnover")
+
 # Filter Application
 filtered = data.copy()
 if search_query:
@@ -194,13 +198,17 @@ if tax_status:
 
 filtered = filtered[(filtered['current_yield_ytm'] >= ytm_range[0]) & (filtered['current_yield_ytm'] <= ytm_range[1])]
 filtered = filtered[(filtered['remaining_tenor_years'] >= tenor_range[0]) & (filtered['remaining_tenor_years'] <= tenor_range[1])]
+if ignore_sub_12m:
+    filtered = filtered[filtered['remaining_tenor_years'] >= 1.0]
+if min_adv > 0.0:
+    filtered = filtered[filtered['daily_value_inr_cr'] >= min_adv]
 
 with tab_screener:
     # Summary Metrics
     m1, m2, m3, m4, m5, m6 = st.columns(6)
-    m1.metric("Screened Bonds", f"{len(filtered)} / {len(data)}")
-    m2.metric("Avg YTM", f"{round(filtered['current_yield_ytm'].mean(), 2)}%" if not filtered.empty else "0%")
-    m3.metric("Avg Post-Tax Yield", f"{round(filtered['post_tax_yield'].mean(), 2)}%" if not filtered.empty else "0%")
+    m1.metric("Screened Bonds", f"{len(filtered)} / {len(data)}", delta="Tenor >= 12M" if ignore_sub_12m else "All Tenors")
+    m2.metric("Avg Gross YTM (0% Tax)", f"{round(filtered['current_yield_ytm'].mean(), 2)}%" if not filtered.empty else "0%")
+    m3.metric("Avg Daily Volume", f"₹ {round(filtered['daily_value_inr_cr'].mean(), 1)} Cr" if not filtered.empty else "₹ 0 Cr")
     m4.metric("Avg G-Sec Spread", f"{int(filtered['credit_spread_bps'].mean()):+d} bps" if not filtered.empty else "0 bps")
     m5.metric("Avg Mod Duration", f"{round(filtered['modified_duration'].mean(), 2)} yrs" if not filtered.empty else "0")
     top_score_bond = filtered.sort_values(by='buy_score', ascending=False).iloc[0]['issuer_name'][:18] + ".." if not filtered.empty else "-"
@@ -209,9 +217,9 @@ with tab_screener:
     st.markdown("---")
 
     display_cols = [
-        "ticker", "issuer_name", "isin", "issue_date", "maturity_date",
-        "payment_frequency", "secured_unsecured", "rating_current", "coupon_rate", 
-        "current_yield_ytm", "credit_spread_bps", "post_tax_yield", "remaining_tenor_years", 
+        "ticker", "issuer_name", "isin", "issue_date", "maturity_date", "remaining_tenor_display",
+        "payment_frequency", "secured_unsecured", "volume_indicator", "avg_daily_volume_cr",
+        "rating_current", "coupon_rate", "current_yield_ytm", "credit_spread_bps", "post_tax_yield",
         "modified_duration", "convexity", "tax_status", "is_govt_psu", "liquidity_flag", "buy_score"
     ]
     display_cols = [c for c in display_cols if c in filtered.columns]
@@ -226,13 +234,16 @@ with tab_screener:
             "isin": st.column_config.TextColumn("ISIN", width="small"),
             "issue_date": st.column_config.TextColumn("Issue Date", width="small"),
             "maturity_date": st.column_config.TextColumn("Maturity Date", width="small"),
+            "remaining_tenor_display": st.column_config.TextColumn("Remaining Tenor", help="Years and months remaining until maturity", width="small"),
             "payment_frequency": st.column_config.TextColumn("Payout Freq", help="Interest Payout Schedule (Annual, Semi-Annual, Monthly)", width="small"),
             "secured_unsecured": st.column_config.TextColumn("Security Type", help="Charge on assets (Secured, Unsecured, Sovereign Guarantee)", width="small"),
+            "volume_indicator": st.column_config.TextColumn("Avg Daily Volume Indication", help="Liquidity category and exchange turnover", width="medium"),
+            "avg_daily_volume_cr": st.column_config.NumberColumn("ADV (₹ Cr)", format="₹ %.2f Cr", help="Average Daily Turnover in INR Crore", width="small"),
             "rating_current": st.column_config.TextColumn("Rating", width="small"),
             "coupon_rate": st.column_config.NumberColumn("Coupon (%)", format="%.2f%%"),
-            "current_yield_ytm": st.column_config.NumberColumn("Pre-Tax YTM (%)", format="%.2f%%"),
+            "current_yield_ytm": st.column_config.NumberColumn("Gross YTM (%)", format="%.2f%%", help="Pre-tax / gross yield to maturity"),
             "credit_spread_bps": st.column_config.NumberColumn("Spread (bps)", help="Yield spread over 10Y Sovereign G-Sec (6.82%)"),
-            "post_tax_yield": st.column_config.NumberColumn("Post-Tax Yield", format="%.2f%%", help="Yield realized after deducting user tax slab"),
+            "post_tax_yield": st.column_config.NumberColumn("Post-Tax Yield", format="%.2f%%", help="Yield realized after deducting user tax slab (0% default = Gross Yield)"),
             "remaining_tenor_years": st.column_config.NumberColumn("Tenor (Yrs)", format="%.1f"),
             "modified_duration": st.column_config.NumberColumn("Mod Dur (Yrs)", format="%.2f"),
             "convexity": st.column_config.NumberColumn("Convexity", format="%.2f"),

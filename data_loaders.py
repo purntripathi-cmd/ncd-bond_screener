@@ -44,8 +44,8 @@ def calculate_duration_convexity(coupon_rate: float, ytm_pct: float, tenor_years
 
     return round(float(mac_dur_years), 2), round(float(mod_dur), 2), round(float(convexity), 2)
 
-def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd.DataFrame:
-    """Calculates tenor, liquidity flag, risk bucketing, durations, convexity, and post-tax yields."""
+def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 0.0) -> pd.DataFrame:
+    """Calculates tenor, liquidity flag, risk bucketing, durations, convexity, and post-tax yields (default: 0% tax / gross yield)."""
     data = df.copy()
     
     # Parse dates
@@ -53,14 +53,35 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd
     data['maturity_date'] = pd.to_datetime(data['maturity_date'])
     today = pd.to_datetime(datetime.today().date())
 
-    # 1. Remaining Tenor (Years)
-    data['remaining_tenor_years'] = ((data['maturity_date'] - today).dt.days / 365.25).round(2)
-    data['remaining_tenor_years'] = data['remaining_tenor_years'].apply(lambda x: max(0.1, x))
+    # 1. Remaining Tenor (Years & Months)
+    days_left = (data['maturity_date'] - today).dt.days
+    data['remaining_tenor_months'] = (days_left / 30.4375).round(1)
+    data['remaining_tenor_years'] = (days_left / 365.25).round(2)
+    data['remaining_tenor_display'] = data.apply(
+        lambda r: f"{r['remaining_tenor_years']:.1f} Yrs ({int(max(0, r['remaining_tenor_months']))}M)" if r['remaining_tenor_months'] >= 0 else "Matured",
+        axis=1
+    )
 
     if 'payment_frequency' not in data.columns:
         data['payment_frequency'] = 'Annual'
 
-    # 2. Derived Liquidity Flag
+    # 2. Average Daily Volume (ADV) Indication
+    data['avg_daily_volume_cr'] = data.get('daily_value_inr_cr', 0.0)
+    
+    def calc_volume_indication(row):
+        val = float(row.get('daily_value_inr_cr', 0.0))
+        trades = int(row.get('num_trades', 0))
+        if val >= 20.0 or trades >= 100:
+            return f"🟢 High (₹ {val:.1f} Cr)"
+        elif val >= 5.0 or trades >= 30:
+            return f"🟡 Medium (₹ {val:.1f} Cr)"
+        elif val >= 1.0:
+            return f"🟠 Moderate (₹ {val:.1f} Cr)"
+        return f"⚪ Low (₹ {val:.1f} Cr)"
+
+    data['volume_indicator'] = data.apply(calc_volume_indication, axis=1)
+
+    # Derived Liquidity Flag
     def calc_liquidity(row):
         val = row.get('daily_value_inr_cr', 0.0)
         trades = row.get('num_trades', 0)
@@ -72,7 +93,7 @@ def compute_derived_metrics(df: pd.DataFrame, user_tax_rate: float = 30.0) -> pd
 
     data['liquidity_flag'] = data.apply(calc_liquidity, axis=1)
 
-    # 3. Post-Tax Yield (%)
+    # 3. Post-Tax Yield (%) - Defaults to 0% Tax (Gross Pre-Tax Yield)
     tax_factor = 1.0 - (user_tax_rate / 100.0)
     data['post_tax_yield'] = data.apply(
         lambda r: round(r['current_yield_ytm'], 2) 
