@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 import os
+from datetime import datetime
 from data_loaders import load_sample_csv, compute_derived_metrics, BENCHMARK_10Y_GSEC_YIELD
 
 # Page Setup
@@ -54,14 +55,18 @@ def get_bond_data():
     return load_sample_csv(CSV_FILE_PATH)
 
 # Top Bar Header & Refresh
-header_col1, header_col2 = st.columns([5, 1])
+header_col1, header_col2 = st.columns([4, 1.5])
 with header_col1:
     st.title("🇮🇳 Listed NCD, G-Sec & Corporate Bond Screener")
-    st.caption(f"Institutional fixed income analytics calibrated against 10Y Indian Sovereign Benchmark ({BENCHMARK_10Y_GSEC_YIELD:.2f}%)")
+    last_sync_time = st.session_state.get("bond_last_sync", datetime.now().strftime("%d-%b-%Y %H:%M:%S"))
+    st.caption(f"Institutional fixed income analytics calibrated against 10Y Indian Sovereign Benchmark ({BENCHMARK_10Y_GSEC_YIELD:.2f}%) • 🕒 Last Refreshed: {last_sync_time}")
 with header_col2:
     st.write("")
-    if st.button("🔄 Refresh Quotes", use_container_width=True):
+    if st.button("🔄 Refresh Quotes & Data", use_container_width=True, help="Flush caches and reload latest quotes and metadata"):
         st.cache_data.clear()
+        st.cache_resource.clear()
+        st.session_state["bond_last_sync"] = datetime.now().strftime("%d-%b-%Y %H:%M:%S")
+        st.toast("Quotes and Bond Screener data refreshed!", icon="✅")
         st.rerun()
 
 raw_data = get_bond_data()
@@ -147,8 +152,10 @@ def calculate_buy_score(row) -> float:
 data["buy_score"] = data.apply(calculate_buy_score, axis=1)
 
 st.sidebar.markdown("---")
-search_query = st.sidebar.text_input("Search Issuer or ISIN", "")
+search_query = st.sidebar.text_input("Search Ticker, ISIN, or Issuer", "", help="Search by NSE/BSE bond ticker symbol, ISIN, or company name")
 sectors = st.sidebar.multiselect("Sector", options=sorted(data['sector'].dropna().unique()))
+sec_filter = st.sidebar.multiselect("Security Type", options=sorted(data['secured_unsecured'].dropna().unique()) if 'secured_unsecured' in data.columns else [])
+pay_freq = st.sidebar.multiselect("Payout Frequency", options=sorted(data['payment_frequency'].dropna().unique()) if 'payment_frequency' in data.columns else [])
 exchanges = st.sidebar.multiselect("Exchange", options=sorted(data['exchange'].dropna().unique()))
 rating_current = st.sidebar.multiselect("Rating", options=sorted(data['rating_current'].dropna().unique()))
 psu_filter = st.sidebar.multiselect("Govt / PSU Entity", options=["Yes", "No"])
@@ -166,9 +173,16 @@ tenor_range = st.sidebar.slider("Tenor (Years)", 0.0, max_tenor, (0.0, max_tenor
 filtered = data.copy()
 if search_query:
     q = search_query.lower()
-    filtered = filtered[filtered["issuer_name"].str.lower().str.contains(q) | filtered["isin"].str.lower().str.contains(q)]
+    t_match = filtered["ticker"].astype(str).str.lower().str.contains(q) if "ticker" in filtered.columns else False
+    i_match = filtered["issuer_name"].astype(str).str.lower().str.contains(q)
+    isin_match = filtered["isin"].astype(str).str.lower().str.contains(q)
+    filtered = filtered[t_match | i_match | isin_match]
 if sectors:
     filtered = filtered[filtered['sector'].isin(sectors)]
+if sec_filter:
+    filtered = filtered[filtered['secured_unsecured'].isin(sec_filter)]
+if pay_freq:
+    filtered = filtered[filtered['payment_frequency'].isin(pay_freq)]
 if exchanges:
     filtered = filtered[filtered['exchange'].isin(exchanges)]
 if rating_current:
@@ -195,19 +209,26 @@ with tab_screener:
     st.markdown("---")
 
     display_cols = [
-        "isin", "issuer_name", "rating_current", "coupon_rate", "current_yield_ytm", 
-        "credit_spread_bps", "post_tax_yield", "remaining_tenor_years", "modified_duration",
-        "convexity", "tax_status", "is_govt_psu", "liquidity_flag", "buy_score"
+        "ticker", "issuer_name", "isin", "issue_date", "maturity_date",
+        "payment_frequency", "secured_unsecured", "rating_current", "coupon_rate", 
+        "current_yield_ytm", "credit_spread_bps", "post_tax_yield", "remaining_tenor_years", 
+        "modified_duration", "convexity", "tax_status", "is_govt_psu", "liquidity_flag", "buy_score"
     ]
+    display_cols = [c for c in display_cols if c in filtered.columns]
 
     st.dataframe(
         filtered[display_cols].sort_values(by="buy_score", ascending=False),
         use_container_width=True,
         hide_index=True,
         column_config={
-            "isin": st.column_config.TextColumn("ISIN"),
+            "ticker": st.column_config.TextColumn("Ticker", help="NSE/BSE Trading Symbol for quick terminal search", width="small"),
             "issuer_name": st.column_config.TextColumn("Bond Title / Issue Name", width="large"),
-            "rating_current": st.column_config.TextColumn("Rating"),
+            "isin": st.column_config.TextColumn("ISIN", width="small"),
+            "issue_date": st.column_config.TextColumn("Issue Date", width="small"),
+            "maturity_date": st.column_config.TextColumn("Maturity Date", width="small"),
+            "payment_frequency": st.column_config.TextColumn("Payout Freq", help="Interest Payout Schedule (Annual, Semi-Annual, Monthly)", width="small"),
+            "secured_unsecured": st.column_config.TextColumn("Security Type", help="Charge on assets (Secured, Unsecured, Sovereign Guarantee)", width="small"),
+            "rating_current": st.column_config.TextColumn("Rating", width="small"),
             "coupon_rate": st.column_config.NumberColumn("Coupon (%)", format="%.2f%%"),
             "current_yield_ytm": st.column_config.NumberColumn("Pre-Tax YTM (%)", format="%.2f%%"),
             "credit_spread_bps": st.column_config.NumberColumn("Spread (bps)", help="Yield spread over 10Y Sovereign G-Sec (6.82%)"),
@@ -291,11 +312,14 @@ with tab_stress_test:
         st.plotly_chart(fig_stress, use_container_width=True)
 
     with st_col2:
+        stress_cols = ["ticker", "issuer_name", "remaining_tenor_years", "modified_duration", "price_change_pct", "new_ytm"]
+        stress_cols = [c for c in stress_cols if c in stress_df.columns]
         st.dataframe(
-            stress_df[["issuer_name", "remaining_tenor_years", "modified_duration", "price_change_pct", "new_ytm"]],
+            stress_df[stress_cols],
             use_container_width=True,
             hide_index=True,
             column_config={
+                "ticker": st.column_config.TextColumn("Ticker"),
                 "issuer_name": st.column_config.TextColumn("Bond"),
                 "remaining_tenor_years": st.column_config.NumberColumn("Tenor (Yrs)", format="%.1f"),
                 "modified_duration": st.column_config.NumberColumn("Mod Dur", format="%.2f"),
